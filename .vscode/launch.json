@@ -9,6 +9,7 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/src/main.ts",
+            "preLaunchTask": "npm: build",
             "outFiles": ["${workspaceFolder}/out/**/*.js"]
           }
     ]
