@@ -6,13 +6,18 @@
   "scripts": {
     "dev": "SET NODE_ENV=dev&&nodemon src/main.ts --no-stdin",
     "build": "tsc",
+    "exec": "ts-node src/main.ts",
     "test": "vitest --run --reporter verbose"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nodemon": "^2.0.22"
+    "csv-writer": "^1.6.0",
+    "lowdb": "^6.1.1",
+    "node-html-parser": "^6.1.10",
+    "nodemon": "^2.0.22",
+    "simple-json-db": "^2.0.0"
   },
   "devDependencies": {
     "ts-node": "^10.9.1",
