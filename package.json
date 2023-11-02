@@ -13,11 +13,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "commander": "^11.1.0",
     "csv-writer": "^1.6.0",
     "lowdb": "^6.1.1",
     "node-html-parser": "^6.1.10",
     "nodemon": "^2.0.22",
-    "simple-json-db": "^2.0.0"
+    "simple-json-db": "^2.0.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
     "ts-node": "^10.9.1",

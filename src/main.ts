@@ -5,20 +5,21 @@
 
 import { parse, HTMLElement } from "node-html-parser";
 import { createObjectCsvWriter } from "csv-writer";
-import { combined, get_archived, store_latest_to_json } from "./store";
-import { dr_latest } from "./dr_latest";
-import { tv2_latest } from "./tv2_latest";
-
-// const combined_flat = Array.from(new Set(combined.map(o => o.data).flat()))
+import { has_key_in_latest, read_new_links, store_latest_to_json } from "./store";
+import { sqlite_open, sqlite_insert, sqlite_create_table } from "./sql";
 
 
-// const combined_obj = combined_flat.reduce((a, v) => ({ ...a, [v]: v}), {}) 
-
-[...dr_latest, ...tv2_latest].forEach(l => {
-  store_latest_to_json(l)
-})
-
-
+;(async () => {
+  try {
+    const db = await sqlite_open();
+    // const info = await db.get(`PRAGMA table_info(links)`)
+    // console.log(info)
+    await sqlite_create_table(db)
+    await sqlite_insert(db, ["fofdo"], "tv2.dk");
+  } catch (err) {
+    console.log(err)
+  }
+})();
 
 
 //@ts-ignore
@@ -43,7 +44,7 @@ function parseDR(parsed: HTMLElement) : [string, string, string] {
 }
 
 //@ts-ignore
-function subheaderTV2(parsed: HTMLElement) : [string, string, string] {
+function parseTV2(parsed: HTMLElement) : [string, string, string] {
   
   const label = parsed.querySelector(".tc_page__label")?.childNodes[0].text!;
 
@@ -72,41 +73,67 @@ function veryfy_result(results : [string,string,string]) {
   } 
 }
 
+const parseFuncs = {
+  "dr.dk" : parseDR,
+  "tv2.dk" : parseTV2
+} as const
+
+
+type parseFuncsKeys = keyof typeof parseFuncs
+
+type linkRecord = {category : string, headline : string, subheading: string, link : string}[]
+
 //@ts-ignore
-async function scrape(links: string[], paseFunc : (parsed) => [string,string,string]) {
-  const records: any = [];
+async function scrape() {
 
-  for (const aa of links) {
-    const result = await fetch(aa);
-    const json = await result.text();
+  const links = (Array.from(new Set(read_new_links())) as string[]).
+    filter((l: string) => !has_key_in_latest(l))
 
-    // @ts-ignore
+  if (links.length === 0) {
+    throw new Error("links already in storage!")
+  };
+
+  const records: linkRecord = [];
+
+  for (const [i, aa] of links.entries()) {
+
+    const parseFunc = (Object.keys(parseFuncs) as parseFuncsKeys[])
+      .filter(p => aa.includes(p))
+      .map(k => parseFuncs[k])[0]
+
     try {
-      const parsed: HTMLElement = parse(json);
-      const [label, header, subHeader] = paseFunc(parsed)
 
+      const result = await fetch(aa);
+      const json = await result.text();
+      const parsed: HTMLElement = parse(json);
+      const [label, header, subHeader] = parseFunc(parsed)
     
       veryfy_result([label, header, subHeader])
       console.log(label, header, subHeader)
 
-
-      records.push({ category: label, headline: header, subheading: subHeader });
+      records.push({ category: label, headline: header, subheading: subHeader, link : aa });
     } catch (e) {
       console.log(e);
     }
   }
-  console.log("DONE fetching");
+
+  for (const link of links) {
+    console.log(link)
+    store_latest_to_json(link)
+  }
+  console.log("DONE");
 
   return records;
 }
 //@ts-ignore
-async function writeCsv(records: any, filename: string) {
+async function writeCsv(records: linkRecord, filename: string) {
   const write = createObjectCsvWriter({
     path: filename,
     header: [
       { id: "category", title: "Category" },
       { id: "headline", title: "Headline" },
       { id: "subheading", title: "SubHeading" },
+      { id : "link", title : "Link" }
     ],
     encoding: "utf8",
   });
@@ -117,10 +144,16 @@ async function writeCsv(records: any, filename: string) {
 }
 
 // (async () => {
-//   const records = await scrape(dr_latest, parseDR);
-//   await writeCsv(records, "dr_latest_2.csv");
+//   try {
+//     const records = await scrape();
+//     await writeCsv(records, new Date().toJSON().replace(/[:\.]/g, "") + "_latest.csv");
+//   }
+//   catch (err) {
+//     console.log(err)
+//   }
 // })();
-//@ts-ignore
+
+
 
 // ;(async () => {
 //   const jsonPreset = (await import('lowdb/node')).JSONPreset

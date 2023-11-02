@@ -70,10 +70,29 @@ enum LatestKeys {
     TV
 }
 
+export function has_key_in_latest(url_key: string, json_file: string = "./storage_latest.json") {
+    const db = new JSONdb(json_file);
+    return db.has(url_key) === true
+}   
+
+
 
 export function store_latest_to_json(url_key: string, json_file: string = "./storage_latest.json") {
     const db = new JSONdb(json_file);
     if (db.has(url_key) === false) {
         db.set(url_key, "");
     }
+}   
+
+export function get_latest(url_key: string, json_file: string = "./storage_latest.json") {
+    const db = new JSONdb(json_file);
+    if (db.has(url_key) === false) {
+        db.set(url_key, "");
+    }
+}   
+
+export function read_new_links(json_file: string = "./new_links.json") {
+    const db = new JSONdb(json_file);
+    const links = db.get(GLOBAL_KEY);
+    return links
 }   
