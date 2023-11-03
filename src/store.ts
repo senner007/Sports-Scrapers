@@ -17,6 +17,7 @@ import { tourdefrance } from '../archived/tourdefrance';
 import { vinterol } from '../archived/vinterol';
 import { vm_fodbold } from '../archived/vm_fodbold';
 import { vm_hhandbold } from '../archived/vm_haandbold';
+import { trimString } from './sql';
 
 // @ts-ignore
 export const combined = [
@@ -84,15 +85,16 @@ export function store_latest_to_json(url_key: string, json_file: string = "./sto
     }
 }   
 
-export function get_latest(url_key: string, json_file: string = "./storage_latest.json") {
-    const db = new JSONdb(json_file);
-    if (db.has(url_key) === false) {
-        db.set(url_key, "");
-    }
-}   
 
 export function read_new_links(json_file: string = "./new_links.json") {
     const db = new JSONdb(json_file);
     const links = db.get(GLOBAL_KEY);
     return links
 }   
+
+export function get_storage(json_file: string = "./storage_latest.json") {
+    const db = new JSONdb(json_file);
+    //@ts-ignore
+    return Object.keys(db.storage!).map(l => trimString(l))
+}   
+

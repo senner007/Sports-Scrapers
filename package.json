@@ -18,6 +18,7 @@
     "lowdb": "^6.1.1",
     "node-html-parser": "^6.1.10",
     "nodemon": "^2.0.22",
+    "puppeteer": "^21.5.0",
     "simple-json-db": "^2.0.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.6"

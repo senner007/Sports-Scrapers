@@ -10,7 +10,7 @@ enum SQLERRORS {
 }
 
 const LINKS_DATABASE = {
-    db_file: "./test",
+    db_file: "./links.db",
     name: "links",
     link_column: "link"
 }
@@ -32,12 +32,19 @@ class DB_VALUE_NOT_IN_TABLE extends Error {
 }
 
 
+export function trimString (str : string){
+    const trimmed = str.trim();
+    const remove_full_stop = trimmed[trimmed.length-1] === "." ? trimmed.slice(0,-1) : trimmed
+    return remove_full_stop
+}
+
+
 export async function sqlite_open() {
 
     try {
         // open the database
         const db = await open({
-            filename: './test.db',
+            filename: LINKS_DATABASE.db_file,
             driver: sqlite3.Database
         })
         return db;
@@ -59,21 +66,44 @@ export async function sqlite_create_table(db: Database<sqlite3.Database, sqlite3
         return
     }
     // create table
-    const sql = `CREATE TABLE  ${LINKS_DATABASE.name}(id INTEGER PRIMARY KEY, ${LINKS_DATABASE.link_column} NVARCHAR(500) NOT NULL UNIQUE, date TEXT , host NVARCHAR(100) NOT NULL)`
+    const sql = `CREATE TABLE  ${LINKS_DATABASE.name}(id INTEGER PRIMARY KEY, ${LINKS_DATABASE.link_column} NVARCHAR(500) NOT NULL UNIQUE, date TEXT)`
     const idx_links = `CREATE INDEX idx_links ON ${LINKS_DATABASE.name}(${LINKS_DATABASE.link_column})`
     await db.exec(sql)
     await db.exec(idx_links)
 
 }
 
-export async function sqlite_insert(db: Database<sqlite3.Database, sqlite3.Statement>, links: string[], host: string) {
+export async function sqlite_insert(db: Database<sqlite3.Database, sqlite3.Statement>, links: string[]) {
 
     for (const l of links) {
-        await db.run(
-            `INSERT INTO ${LINKS_DATABASE.name}(${LINKS_DATABASE.link_column}, date, host) VALUES (?, ?, ?)`,
-            l, Date.now(), host
-        )
+        try {
+            await db.run(
+                `INSERT INTO ${LINKS_DATABASE.name}(${LINKS_DATABASE.link_column}, date) VALUES (?, ?)`,
+                l, Date.now()
+            )
+        } catch (err) {
+            console.log(err)
+            console.log(l)
+            throw new Error()
+        }
+      
     }
+}
+
+
+export async function sqlite_fetch_value(db: Database<sqlite3.Database, sqlite3.Statement>, link: string) {
+
+    return await db.get(`SELECT ${LINKS_DATABASE.link_column} FROM ${LINKS_DATABASE.name} WHERE ${LINKS_DATABASE.link_column} = ?`, link)
+
+}
+
+export async function sqlite_assert_value_not_found(db: Database<sqlite3.Database, sqlite3.Statement>, link: string) {
+
+    const result = await sqlite_fetch_value(db, link)
+    if (result === undefined) {
+        return true
+    }
+    return false;
 }
 
 export async function sqlite_get(db: Database<sqlite3.Database, sqlite3.Statement>, link: string) {
