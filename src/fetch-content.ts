@@ -1,11 +1,8 @@
 import { parse, HTMLElement } from "node-html-parser";
 import { parseFuncs, parseFuncsKeys } from "./links/links-parsers";
 
-
-
-
 export async function html_fetch(links: string[]) {
-
+    
     const linksResponse = []
     for (const link of links) {
         console.log(link)

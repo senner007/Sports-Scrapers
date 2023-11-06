@@ -43,7 +43,6 @@ export function validate_parsed_content(linkRecords: linkRecords) {
     
     for (const record of linkRecords) {
         try {
-            console.log(record.link)
             throw_if_not_string(record.category)
             throw_if_not_string(record.headline)
             throw_if_not_string(record.link)

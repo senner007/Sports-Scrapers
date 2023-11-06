@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import { WebScraper } from "../scraper";
-import { is_valid_URL, remove_duplicates, trimString } from "../formatters_validators";
+import { is_valid_URL, remove_duplicates, trim_string } from "../formatters_validators";
 import { LinksDB } from "./linksSql";
 
 const scrapeIdentifiers = {
@@ -82,7 +82,7 @@ export async function scrape_new_links(scrapers : WebScraper<string[]>[]) {
 }
 
 export function format_links(links: string[]) {
-    const links_trimmed = links.map(trimString)
+    const links_trimmed = links.map(trim_string)
     const links_unique = remove_duplicates(links_trimmed)
     return links_unique
 }
