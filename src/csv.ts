@@ -1,15 +1,16 @@
 import { createObjectCsvWriter } from "csv-writer";
+import { linkRecords } from "./links/links-parsers";
 
-//@ts-ignore
-export async function writeCsv(records: linkRecord, filename: string) {
+export async function writeCsv(records: linkRecords, filename: string) {
+
+  const to_camel = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+  const header = Object.keys(records[0])
+    .map(key => ({id : key, title : to_camel(key)}))
+
     const write = createObjectCsvWriter({
       path: filename,
-      header: [
-        { id: "category", title: "Category" },
-        { id: "headline", title: "Headline" },
-        { id: "subheading", title: "SubHeading" },
-        { id: "link", title: "Link" }
-      ],
+      header: header,
       encoding: "utf8",
     });
   

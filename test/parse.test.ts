@@ -1,6 +1,6 @@
 import { expect, test, describe } from "vitest";
-import { parseLink } from "../src/getContent";
-import { parseDR } from "../src/parsers";
+import { parse_html_response } from "../src/fetch-content";
+import { parseDR } from "../src/links/links-parsers";
 
 describe("Parse html test", () => { 
     test('parsing html should return expected content', async () => {
@@ -10,7 +10,7 @@ describe("Parse html test", () => {
         const htmlFakeText = fs.readFileSync(__dirname + '\\dr-link-fake.html', 'utf8');
 
         // Act
-        const result = parseLink(htmlFakeText, parseDR)
+        const result = parse_html_response(htmlFakeText, parseDR)
     
         //Assert
         expect(result).toStrictEqual(["LABEL-TEXT", "HEADER-TEXT", "SUBHEADER-TEXT"])

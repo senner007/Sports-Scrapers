@@ -17,7 +17,6 @@ import { tourdefrance } from '../archived/tourdefrance';
 import { vinterol } from '../archived/vinterol';
 import { vm_fodbold } from '../archived/vm_fodbold';
 import { vm_hhandbold } from '../archived/vm_haandbold';
-import { trimString } from './linksSql';
 
 // @ts-ignore
 export const combined = [

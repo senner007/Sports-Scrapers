@@ -1,20 +1,15 @@
-import puppeteer, { Page, PuppeteerNode } from "puppeteer";
-import { parseDR, parseTV2 } from "../parsers";
+import puppeteer from "puppeteer";
 import { WebScraper } from "../scraper";
-import sqlite3 from 'sqlite3'
-import { Database, open } from 'sqlite'
-import { remove_duplicates, trimString } from "../formatters";
-import { LinksDB } from "../linksSql";
+import { is_valid_URL, remove_duplicates, trimString } from "../formatters_validators";
+import { LinksDB } from "./linksSql";
 
 const scrapeIdentifiers = {
     "dr.dk": {
         url: "https://www.dr.dk/sporten/seneste-sport/",
-        parseFunc: parseDR,
         linkSelector: '.hydra-latest-news-page-sidebar__panel a'
     },
     "tv2.dk": {
         url: "https://sport.tv2.dk/",
-        parseFunc: parseTV2,
         linkSelector: '.tc_teaser > .tc_teaser__link',
         buttonLink: '.tc_button.js-tc_load-more__trigger.tc_button--secondary.tc_button--default.js-tc_load-more__bound',
         buttonLoadingRemoved: 'document.querySelector(".tc_button--loading") == null'
@@ -81,9 +76,7 @@ export async function remove_existing_links(db: LinksDB, links: string[]) {
 
 }
 
-
 export async function scrape_new_links(scrapers : WebScraper<string[]>[]) {
-
     const links = await Promise.all(scrapers.map(scraper => scraper.execute()));
     return links.flat()
 }
@@ -95,23 +88,12 @@ export function format_links(links: string[]) {
 }
 
 export function validate_links(links: string[]) {
-    // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
-    function validURL(str: string) {
-        var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-          '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-          '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-          '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-          '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-          '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-        return !!pattern.test(str);
-    }
     for (const link of links) {
-        const result = validURL(link)
+        const result = is_valid_URL(link)
         if (!result) {
             throw new Error("Link validation error!")
         }
     }
 } 
-
 
 export type Urls = typeof scrapeIdentifiers[keyof typeof scrapeIdentifiers]["url"]

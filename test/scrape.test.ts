@@ -1,5 +1,5 @@
 import { expect, test, describe } from "vitest";
-import { scraperDr, scraperTv2 } from "../src/scrapers/scrapers";
+import { scraperDr, scraperTv2 } from "../src/links/links-scrapers";
 
 describe("Scrape class test", () => { // put in mocks folder
     test('scrape classes should return links within html', async () => {

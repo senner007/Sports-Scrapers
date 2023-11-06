@@ -9,9 +9,7 @@ export class WebScraper<T> {
     }
 
     async execute(URL? : string) {
-
         return await this.manipulator(URL)
-      
     }
 }
 
