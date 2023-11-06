@@ -38,6 +38,10 @@ export function trimString (str : string){
     return remove_full_stop
 }
 
+export function removeDuplicates (strArr : any[]){
+    return Array.from(new Set(strArr))
+}
+
 
 export async function sqlite_open() {
 
