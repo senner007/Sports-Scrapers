@@ -30,7 +30,6 @@ export async function fetchContent(links: string[]) {
 
 }
 
-
 export function parseLink(linkResponse : string, parser : typeof parseFuncs[keyof typeof parseFuncs]) {
     const parsed: HTMLElement = parse(linkResponse);
     return parser(parsed)
@@ -51,14 +50,10 @@ export async function parseContent(links: {
             .map(k => parseFuncs[k])[0]
 
         try {
-
-            console.log(link.response)
-
-            const parsed: HTMLElement = parse(link.response);
+    
             const [label, header, subHeader] = parseLink(link.response, parser)
 
             veryfy_result([label, header, subHeader])
-            console.log(label, header, subHeader)
 
             records.push({ category: label, headline: header, subheading: subHeader, link: link.URL });
         } catch (e) {

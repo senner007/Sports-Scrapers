@@ -1,0 +1,3 @@
+{"level":"error","message":"fdfd","service":"links-scraper"}
+{"level":"error","message":"","service":"links-scraper"}
+{"level":"error","message":"SQLITE_RANGE: column index out of range","service":"links-scraper"}

@@ -1,9 +1,10 @@
 import puppeteer, { Page, PuppeteerNode } from "puppeteer";
 import { parseDR, parseTV2 } from "../parsers";
 import { WebScraper } from "../scraper";
-import { removeDuplicates, sqlite_assert_value_not_found, trimString } from "../sql";
 import sqlite3 from 'sqlite3'
 import { Database, open } from 'sqlite'
+import { remove_duplicates, trimString } from "../formatters";
+import { LinksDB } from "../linksSql";
 
 const scrapeIdentifiers = {
     "dr.dk": {
@@ -66,14 +67,14 @@ export const scraperDr = new WebScraper(
     })
 
 
-export async function removeExistingLinks(db: Database<sqlite3.Database>, links: string[]) {
+export async function remove_existing_links(db: LinksDB, links: string[]) {
 
     const new_links = []
 
-    for (const l of links) {
-        const notExist = await sqlite_assert_value_not_found(db, l)
-        if (notExist) {
-            new_links.push(l)
+    for (const link of links) {
+        const ifExists = await db.check_link_exists(link)
+        if (!ifExists) {
+            new_links.push(link)
         }
     }
     return new_links
@@ -81,14 +82,36 @@ export async function removeExistingLinks(db: Database<sqlite3.Database>, links:
 }
 
 
-export async function scrapeNewLinks(scrapers : WebScraper<string[]>[]) {
-
-    // TODO : Mock WebScraper with mock execute method to return links array 
+export async function scrape_new_links(scrapers : WebScraper<string[]>[]) {
 
     const links = await Promise.all(scrapers.map(scraper => scraper.execute()));
-
     return links.flat()
 }
+
+export function format_links(links: string[]) {
+    const links_trimmed = links.map(trimString)
+    const links_unique = remove_duplicates(links_trimmed)
+    return links_unique
+}
+
+export function validate_links(links: string[]) {
+    // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
+    function validURL(str: string) {
+        var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+          '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+          '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+          '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+          '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+          '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+        return !!pattern.test(str);
+    }
+    for (const link of links) {
+        const result = validURL(link)
+        if (!result) {
+            throw new Error("Link validation error!")
+        }
+    }
+} 
 
 
 export type Urls = typeof scrapeIdentifiers[keyof typeof scrapeIdentifiers]["url"]
