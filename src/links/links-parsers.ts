@@ -4,8 +4,27 @@ import { throw_if_not_string } from "../formatters_validators";
 
 export function parseDR(parsed: HTMLElement): [string, string, string] {
 
-    const label = parsed.querySelector(".dre-teaser-meta-label.dre-teaser-meta-label--primary")?.text!
-        || parsed.querySelector(".dre-article-title-section-label__title--link")?.text!
+    // function get_topmost_element(selector) {
+    //     var top = 0,
+    //         el;
+    //     $(selector).each(function(){
+    //         var offset = $(this).offset();
+    //         if (offset.top > top) {
+    //             highest = offset.top;
+    //             el = $(this);
+    //         }
+    //     });
+    
+    //     return el;
+    // }
+
+    // TODO : verify label position is right above main title
+    // TODO : verify subheader position is right below main title
+
+
+    const label = parsed.querySelector(".dre-article-title-section-label__title--link")?.text!
+        || parsed.querySelector(".dre-teaser-meta-label.dre-teaser-meta-label--primary")?.text!
+
     const header =
         parsed.querySelector(".dre-title-text")?.text!
     const subHeader =

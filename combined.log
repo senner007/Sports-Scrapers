@@ -16,3 +16,8 @@
 {"level":"error","message":"SQLITE_RANGE: column index out of range","service":"links-scraper"}
 {"level":"info","message":"Links scrape success! Wrote 2023-11-06T224523116Z_latest.csv","service":"links-scraper"}
 {"level":"info","message":"Links scrape success! Wrote undefined","service":"links-scraper"}
+{"level":"info","message":"Links scrape success! Wrote 2023-11-08T212659281Z_latest.csv","service":"links-scraper"}
+{"level":"info","message":"Links scrape success! Wrote 2023-11-10T141801123Z_latest.csv","service":"links-scraper"}
+{"level":"info","message":"Links scrape success! Wrote 2023-11-11T215837597Z_latest.csv","service":"links-scraper"}
+{"level":"info","message":"Links scrape success! Wrote 2023-11-14T134221989Z_latest.csv","service":"links-scraper"}
+{"level":"info","message":"Links scrape success! Wrote 2023-11-16T201208574Z_latest.csv","service":"links-scraper"}
