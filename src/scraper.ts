@@ -1,7 +1,5 @@
 import puppeteer, { Page, Puppeteer, PuppeteerNode } from 'puppeteer';
 
-// type LinkSelectors = typeof scrapeIdentifiers[keyof typeof scrapeIdentifiers]["linkSelector"]
-
 export class WebScraper<T> {
 
     constructor(
