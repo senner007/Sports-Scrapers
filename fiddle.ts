@@ -1,18 +1,16 @@
 console.log("fiddle")
 
-
-const sentence = "4, 3324, 1926, 1908"
-
 var vocab = require('./vocab.json')
 var regexes = require('./regexes.json')
 
 
-function function_formatter(regexes: any, str: string) {
+function function_formatter(regexes: Record<any, {regex: string, replacewith : string}>, str: string) {
     let new_str = str.toLocaleLowerCase()
     for (const r in regexes) {
         const regex = new RegExp(regexes[r]["regex"], "gi");
+        console.log(regex)
         const replacer = regexes[r]["replacewith"].replace("\\1", () => "$1")
-        console.log(replacer)
+
         new_str = new_str.replace(regex, replacer)
     }
 
@@ -50,13 +48,15 @@ function pad_zeros(words : number[]) {
 //   5, 1919, 3341, 4402,    4,   14, 4516,    2, 1919, 6516,    2,
 //['xland' 'skal' 'med' 'i' 'xtournament' ',' 'hvor' 'xnationality' 'skal' 'besejre' 'xnationality']
 
+const sentence = "østrigske og østrigermål skal kæmpe i østrigsk-land østrig i 1934 og 5-5";
+
 ; (async () => {
     // console.log(regexes)
 
-    const formatted = function_formatter(regexes, "danmark skal med i OL, hvor danskere skal besejre svenskere")
-    const vectorized = vectorize(vocab_dict, formatted)
-    const padded = pad_zeros(vectorized);
-    console.log(padded)
+    const formatted = function_formatter(regexes, sentence)
+    // const vectorized = vectorize(vocab_dict, formatted)
+    // const padded = pad_zeros(vectorized);
+    console.log(formatted.join(" "))
 
 })();
 
